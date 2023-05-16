@@ -17,6 +17,9 @@ router.post('/addContact', authMiddleware, controller.addContact)
 
 router.post('/setNames', authMiddleware, controller.setNames)
 
-router.get('/getContacts', authMiddleware, controller.getContacts)
+router.get('/getContacts',[
+    check('firstName', 'Firstname can not be empty').notEmpty(),
+    check('lastName', 'Lastname can not be empty').notEmpty()
+], authMiddleware, controller.getContacts)
 
 module.exports = router;
