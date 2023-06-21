@@ -23,15 +23,15 @@ class authController {
             }
             const candidate = await User.findOne({ username });
             if (candidate) {
-                return res.status(400).json({ message: 'User already exists' });
+                return res.status(400).json({ success: false, message: 'User already exists' });
             }
             const hashPassword = bcrypt.hashSync(password, 7);
             const user = new User({ username, password: hashPassword });
             await user.save();
-            return res.status(200).json({ message: 'Registration success' });
+            return res.status(200).json({ success: true });
         } catch (error) {
             console.log(error);
-            res.status(400).json({ message: 'Registration error' });
+            res.status(400).json({ success: false, message: 'Registration error' });
         }
     }
 
@@ -40,27 +40,31 @@ class authController {
             const { username, password } = req.body;
             const user = await User.findOne({ username });
             if (!user) {
-                return res.status(400).json({ message: 'User not found' });
+                return res.status(400).json({ success: false, message: 'User not found' });
             }
             const validPassword = bcrypt.compareSync(password, user.password);
             if (!validPassword) {
-                return res.status(400).json({ message: 'Invalid password' });
+                return res.status(400).json({ success: false, message: 'Invalid password' });
             }
             const token = generateAccessToken(user._id, user.usename);
             return res.status(200).json({ success: true, data: { token: token } });
 
         } catch (error) {
-            console.log(error);
-            res.status(400).json({ message: 'Login error' });
+            res.status(400).json({ success: false, message: 'Login error' });
         }
     }
 
     async getUsers(req, res) {
         try {
             const users = await User.find();
-            return res.status(200).json(users);
+            let mapUsers = users.map((user) => {
+                user.__v = undefined
+                return user
+            })
+            console.log(mapUsers)
+            return res.status(200).json({ success: true, data: { users: mapUsers } });
         } catch (error) {
-            res.status(400).json({ message: 'Something went wrong' });
+            res.status(400).json({ success: false, message: 'Something went wrong' });
         }
     }
 
@@ -70,20 +74,20 @@ class authController {
             console.log(username);
             const user = await User.findOne({ username: username });
             if (!user) {
-                return res.status(400).json({ message: 'User not found' });
+                return res.status(400).json({ success: false, message: 'User not found' });
             }
             let currentUser = await User.findOne({ _id: req.user.id })
             console.log(currentUser)
             if (currentUser.contacts.some(contact => contact.username === user.username)) {
-                return res.status(400).json({ message: 'Contact already exists' })
+                return res.status(400).json({ success: false, message: 'Contact already exists' })
             }
             currentUser.contacts = [...currentUser.contacts, { ...user }]
             console.log(currentUser)
             currentUser.save()
-            return res.status(200).json({ message: 'Contact joined' })
+            return res.status(200).json({ success: true })
 
         } catch (error) {
-            res.status(400).json({ message: 'Something went wrong' });
+            res.status(400).json({ success: false, message: 'Something went wrong' });
         }
     }
 
@@ -96,9 +100,9 @@ class authController {
             currentUser.lastName = lastName
             console.log(currentUser)
             currentUser.save()
-            return res.status(200).json({ message: 'Names set' })
+            return res.status(200).json({ success: true })
         } catch (error) {
-            res.status(400).json({ message: 'Something went wrong' });
+            res.status(400).json({ success: false, message: 'Something went wrong' });
         }
     }
 
@@ -111,7 +115,7 @@ class authController {
                 console.log(user)
                 contactsList.push({ username: user.username, firstName: user.firstName, lastName: user.lastName, _id: user._id })
             }
-            return res.status(200).json(contactsList);
+            return res.status(200).json({ success: true, data: { contactsList } });
         } catch (error) {
             res.status(400).json({ message: 'Something went wrong' });
         }
