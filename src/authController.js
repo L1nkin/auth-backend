@@ -47,7 +47,7 @@ class authController {
                 return res.status(400).json({ message: 'Invalid password' });
             }
             const token = generateAccessToken(user._id, user.usename);
-            return res.status(200).json({ message: 'Login success', token });
+            return res.status(200).json({ success: true, data: { token: token } });
 
         } catch (error) {
             console.log(error);
