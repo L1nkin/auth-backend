@@ -28,7 +28,8 @@ class authController {
             const hashPassword = bcrypt.hashSync(password, 7);
             const user = new User({ username, password: hashPassword });
             await user.save();
-            return res.status(200).json({ success: true });
+            const token = generateAccessToken(user._id, user.usename);
+            return res.status(200).json({ success: true, data: { token: token } });
         } catch (error) {
             console.log(error);
             res.status(400).json({ success: false, message: 'Registration error' });
@@ -95,10 +96,8 @@ class authController {
         try {
             const { firstName, lastName } = req.body;
             let currentUser = await User.findOne({ _id: req.user.id })
-            console.log(currentUser)
             currentUser.firstName = firstName
             currentUser.lastName = lastName
-            console.log(currentUser)
             currentUser.save()
             return res.status(200).json({ success: true })
         } catch (error) {
@@ -118,6 +117,20 @@ class authController {
             return res.status(200).json({ success: true, data: { contactsList } });
         } catch (error) {
             res.status(400).json({ message: 'Something went wrong' });
+        }
+    }
+
+    async getUserData(req, res) {
+        try {
+            const { username } = req.body
+            const user = await User.findOne({ username: username })
+            if (user) {
+                res.status(200).json({ success: true, userData: user })
+            } else {
+                res.status(400).json({ success: false, message: "User not found" })
+            }
+        } catch {
+            res.status(400).json({ success: false, message: "Something went wrong" })
         }
     }
 }
