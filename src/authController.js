@@ -27,6 +27,7 @@ class authController {
             }
             const hashPassword = bcrypt.hashSync(password, 7);
             const user = new User({ username, password: hashPassword });
+            console.log(user)
             await user.save();
             const token = generateAccessToken(user._id, user.usename);
             return res.status(200).json({ success: true, data: { token: token } });
@@ -82,6 +83,7 @@ class authController {
             if (currentUser.contacts.some(contact => contact.username === user.username)) {
                 return res.status(400).json({ success: false, message: 'Contact already exists' })
             }
+            user.__v = undefined
             currentUser.contacts = [...currentUser.contacts, { ...user }]
             console.log(currentUser)
             currentUser.save()
@@ -98,6 +100,7 @@ class authController {
             let currentUser = await User.findOne({ _id: req.user.id })
             currentUser.firstName = firstName
             currentUser.lastName = lastName
+            currentUser.__v = undefined
             currentUser.save()
             return res.status(200).json({ success: true })
         } catch (error) {
@@ -125,6 +128,7 @@ class authController {
             const { username } = req.body
             const user = await User.findOne({ username: username })
             if (user) {
+                user.__v = undefined
                 res.status(200).json({ success: true, userData: user })
             } else {
                 res.status(400).json({ success: false, message: "User not found" })
