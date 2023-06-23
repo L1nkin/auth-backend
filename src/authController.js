@@ -16,7 +16,7 @@ const generateAccessToken = (id, username) => {
 class authController {
     async registration(req, res) {
         try {
-            const { username, password } = req.body;
+            const { username, password, firstName, lastName, phoneNumber } = req.body;
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
                 return res.status(400).json({ errors: errors.array() });
@@ -26,21 +26,24 @@ class authController {
                 return res.status(400).json({ success: false, message: 'User already exists' });
             }
             const hashPassword = bcrypt.hashSync(password, 7);
-            const user = new User({ username, password: hashPassword });
-            console.log(user)
+            const user = new User({ username, password: hashPassword, firstName: firstName, lastName: lastName, phoneNumber: phoneNumber });
             await user.save();
             const token = generateAccessToken(user._id, user.usename);
             return res.status(200).json({ success: true, data: { token: token } });
         } catch (error) {
-            console.log(error);
             res.status(400).json({ success: false, message: 'Registration error' });
         }
     }
 
     async login(req, res) {
         try {
-            const { username, password } = req.body;
-            const user = await User.findOne({ username });
+            const { username, phoneNumber, password } = req.body;
+            let user
+            if (username) {
+                user = await User.findOne({ username });
+            } else if (phoneNumber) {
+                user = await User.findOne({ phoneNumber });
+            }
             if (!user) {
                 return res.status(400).json({ success: false, message: 'User not found' });
             }
@@ -63,7 +66,6 @@ class authController {
                 user.__v = undefined
                 return user
             })
-            console.log(mapUsers)
             return res.status(200).json({ success: true, data: { users: mapUsers } });
         } catch (error) {
             res.status(400).json({ success: false, message: 'Something went wrong' });
