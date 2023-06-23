@@ -124,7 +124,7 @@ class authController {
 
     async getUserData(req, res) {
         try {
-            const { username } = req.body
+            const { username } = req.query
             const user = await User.findOne({ username: username })
             if (user) {
                 user.__v = undefined
