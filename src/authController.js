@@ -85,7 +85,6 @@ class authController {
             }
             user.__v = undefined
             currentUser.contacts = [...currentUser.contacts, { ...user }]
-            console.log(currentUser)
             currentUser.save()
             return res.status(200).json({ success: true })
 
@@ -129,7 +128,7 @@ class authController {
             const user = await User.findOne({ username: username })
             if (user) {
                 user.__v = undefined
-                res.status(200).json({ success: true, userData: user })
+                res.status(200).json({ success: true, data: { user } })
             } else {
                 res.status(400).json({ success: false, message: "User not found" })
             }
