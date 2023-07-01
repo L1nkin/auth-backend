@@ -75,20 +75,18 @@ class authController {
     async addContact(req, res) {
         try {
             const { username } = req.body;
-            console.log(username);
             const user = await User.findOne({ username: username });
             if (!user) {
                 return res.status(400).json({ success: false, message: 'User not found' });
             }
             let currentUser = await User.findOne({ _id: req.user.id })
-            console.log(currentUser)
             if (currentUser.contacts.some(contact => contact.username === user.username)) {
                 return res.status(400).json({ success: false, message: 'Contact already exists' })
             }
             user.__v = undefined
-            currentUser.contacts = [...currentUser.contacts, { ...user }]
+            currentUser.contacts = [...currentUser.contacts, { _id: user._id, firstName: user.firstName, lastName: user.lastName }]
             currentUser.save()
-            return res.status(200).json({ success: true })
+            return res.status(200).json({ success: true, message: "User was add" })
 
         } catch (error) {
             res.status(400).json({ success: false, message: 'Something went wrong' });
@@ -116,11 +114,11 @@ class authController {
             for (let contact in currentUser.contacts) {
                 let user = await User.findOne({ _id: currentUser.contacts[contact]._id })
                 console.log(user)
-                contactsList.push({ username: user.username, firstName: user.firstName, lastName: user.lastName, _id: user._id })
+                contactsList.push({ _id: user._id, firstName: user.firstName, lastName: user.lastName })
             }
-            return res.status(200).json({ success: true, data: { contactsList } });
+            return res.status(200).json({success: true, data: { contacts: contactsList }});
         } catch (error) {
-            res.status(400).json({ message: 'Something went wrong' });
+            res.status(400).json({success: false,  message: 'Something went wrong' });
         }
     }
 
