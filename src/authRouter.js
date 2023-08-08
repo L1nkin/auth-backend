@@ -39,5 +39,7 @@ router.get('/getUserData', authMiddleware, controller.getUserData)
 
 router.get('/users', controller.getUsers)
 
+router.get('/checkUsers', controller.checkUsers)
+
 
 module.exports = router;

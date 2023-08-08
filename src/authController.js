@@ -136,7 +136,7 @@ class authController {
             return res.status(200).json({ success: true, message: "User was add" })
 
         } catch (error) {
-            res.status(400).json({ success: false, message: 'Something went wrong' });
+            res.status(400).json({ success: false, message: error.message });
         }
     }
 
@@ -186,6 +186,17 @@ class authController {
             }
         } catch {
             res.status(400).json({ success: false, message: "Something went wrong" })
+        }
+    }
+
+    async checkUsers(req, res) {
+        try {
+            const query = req.query.searchText
+            const users = await User.find()
+            const searchedUsers = [...users].filter((user) => user.username.startsWith(query))
+            return res.status(200).json({ success: true, data: { searchedUsers } })
+        } catch(error) {
+            return res.status(400).json({ success: false, message: error.message })
         }
     }
 
