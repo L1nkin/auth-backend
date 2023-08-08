@@ -133,7 +133,7 @@ class authController {
             currentUser.contacts = [...currentUser.contacts, newContact]
             currentUser.markModified('contacts')
             currentUser.save()
-            return res.status(200).json({ success: true, message: "User was add" })
+            return res.status(200).json({ success: true, data: "User was add" })
 
         } catch (error) {
             res.status(400).json({ success: false, message: error.message });
