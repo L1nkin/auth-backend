@@ -191,9 +191,9 @@ class authController {
 
     async checkUsers(req, res) {
         try {
-            const query = req.query.searchText
+            const query = req.query.searchText.toLowerCase()
             const users = await User.find()
-            const searchedUsers = [...users].filter((user) => user.username.startsWith(query))
+            const searchedUsers = [...users].filter((user) => user.username.toLowerCase().startsWith(query))
             return res.status(200).json({ success: true, data: { searchedUsers } })
         } catch(error) {
             return res.status(400).json({ success: false, message: error.message })
