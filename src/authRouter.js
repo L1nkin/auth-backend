@@ -1,45 +1,58 @@
-const Router = require('express');
+const Router = require("express");
 const router = new Router();
-const controller = require('./authController')
-const { check } = require('express-validator')
-const authMiddleware = require('./middlewares/authMiddleware')
-const refreshMiddleware = require('./middlewares/refreshMiddleware')
+const controller = require("./authController");
+const { check } = require("express-validator");
+const authMiddleware = require("./middlewares/authMiddleware");
+const refreshMiddleware = require("./middlewares/refreshMiddleware");
 
 // Post requests
 
-router.post('/registration', [
-    check('username', 'Username can not be empty').notEmpty(),
-    check('password', 'Password must be longer then 4 symbols').isLength({ min: 4 }),
-    check('phoneNumber', 'Phone number can not be empty').notEmpty()
-], controller.registration)
+router.post(
+    "/registration",
+    [
+        check("username", "Username can not be empty").notEmpty(),
+        check("password", "Password must be longer then 4 symbols").isLength({
+            min: 4,
+        }),
+        check("phoneNumber", "Phone number can not be empty").notEmpty(),
+    ],
+    controller.registration
+);
 
-router.post('/login', controller.login)
+router.post("/login", controller.login);
 
-router.post('/registrationByGoogle', controller.registrationByGoogle)
+router.post("/registrationByGoogle", controller.registrationByGoogle);
 
-router.post('/loginByGoogle', controller.loginByGoogle)
+router.post("/loginByGoogle", controller.loginByGoogle);
 
-router.post('/addPhoneNumber', authMiddleware, controller.addPhoneNumber)
+router.post("/addPhoneNumber", authMiddleware, controller.addPhoneNumber);
 
-router.post('/addContact', authMiddleware, controller.addContact)
+router.post("/addContact", authMiddleware, controller.addContact);
 
-router.post('/setNames', authMiddleware, controller.setNames)
+router.post("/removeContact", authMiddleware, controller.removeContact);
 
-router.post('/updateAccessToken', refreshMiddleware, controller.updateAccessToken )
+router.post("/setNames", authMiddleware, controller.setNames);
 
-router.post('/addToFavorites', authMiddleware, controller.addToFavorites)
+router.post(
+    "/updateAccessToken",
+    refreshMiddleware,
+    controller.updateAccessToken
+);
 
-router.post('/addToRecents', authMiddleware, controller.addToRecents)
+router.post("/addToFavorites", authMiddleware, controller.addToFavorites);
+
+router.post("/addToRecents", authMiddleware, controller.addToRecents);
+
+router.post("/changeProfileImage", authMiddleware, controller.changeProfileImage)
 
 // Get requests
 
-router.get('/getContacts', authMiddleware, controller.getContacts)
+router.get("/getContacts", authMiddleware, controller.getContacts);
 
-router.get('/getUserData', authMiddleware, controller.getUserData)
+router.get("/getUserData", authMiddleware, controller.getUserData);
 
-router.get('/users', controller.getUsers)
+router.get("/users", controller.getUsers);
 
-router.get('/checkUsers', controller.checkUsers)
-
+router.get("/checkUsers", controller.checkUsers);
 
 module.exports = router;

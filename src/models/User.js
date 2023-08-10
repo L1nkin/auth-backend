@@ -7,6 +7,7 @@ const User = new Schema({
     phoneNumber: { type: String, required: false, unique: true },
     firstName: { type: String, required: false },
     lastName: { type: String, required: false },
+    imageString: { type: String, require: false },
     contacts: [{ type: Schema.Types.Mixed, required: true, unique: true }],
     recentContacts: [{ type: Schema.Types.Mixed, required: true, unique: true }]
 })
