@@ -228,13 +228,17 @@ class authController {
   async changeProfileImage(req, res) {
     try {
       let currentUser = await User.findOne({ _id: req.user.id });
-      currentUser.imageString = req.body.imageString
-      currentUser.save()
-      return res
-        .status(200)
-        .json({ success: true, data: "Image has been changed" });
+      if (req.body.imageString) {
+        currentUser.imageString = req.body.imageString
+        currentUser.save()
+        return res
+          .status(200)
+          .json({ success: true, data: "Image has been changed" });
+      } else {
+        return res.status(400).json({ success: false, data: "Something went wrong" });
+      }
     } catch (error) {
-      res.status(400).json({ success: false, data: error.message });
+      return res.status(400).json({ success: false, data: error.message });
     }
   }
 
