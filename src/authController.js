@@ -184,10 +184,12 @@ class authController {
       user.__v = undefined;
       let newContact = new Contact({
         _id: user.id,
+        username: user.username,
         phoneNumber: user.phoneNumber,
         firstName: user.firstName,
         lastName: user.lastName,
         isFavorite: false,
+        imageString: user.imageString
       });
       currentUser.contacts = [...currentUser.contacts, newContact];
       currentUser.markModified("contacts");
@@ -308,25 +310,31 @@ class authController {
 
   async addToFavorites(req, res) {
     try {
+      const { username } = req.body
       const currentUser = await User.findOne({ _id: req.user.id });
-      currentUser.contacts.find((contact) => {
-        if (contact._id.toString() === req.user.id) {
+      if (!currentUser.contacts.some((contact) => { return contact.username === username })) {
+        return res.status(400).json({ success: false, message: "Undefined contact" });
+      }
+      currentUser.contacts.map((contact) => {
+        if (contact.username === username) {
+          console.log(contact.username)
           contact.isFavorite = !contact.isFavorite;
         }
       });
       currentUser.markModified("contacts");
       currentUser.save();
-      res.status(200).json({ success: true });
+      return res.status(200).json({ success: true });
     } catch {
-      res.status(400).json({ success: false, message: "Something went wrong" });
+      return res.status(400).json({ success: false, message: "Something went wrong" });
     }
   }
 
   async addToRecents(req, res) {
     try {
+      const { username } = req.body
       let currentUser = await User.findOne({ _id: req.user.id });
       for (const contact of currentUser.contacts) {
-        if (contact._id.toString() === req.user.id) {
+        if (contact.username === username) {
           currentUser.recentContacts.unshift({
             date: new Date(),
             contact: contact,
