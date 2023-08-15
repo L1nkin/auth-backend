@@ -7,6 +7,7 @@ const Contact = new Schema({
     lastName: { type: String, required: false },
     isFavorite: { type: Boolean, required: true },
     imageString: { type: String, required: false },
+    notice: { type: String, required: false }
 })
 
 module.exports = model('Contact', Contact)

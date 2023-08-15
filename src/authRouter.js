@@ -45,6 +45,8 @@ router.post("/addToRecents", authMiddleware, controller.addToRecents);
 
 router.post("/changeProfileImage", authMiddleware, controller.changeProfileImage)
 
+router.post("/changeContactData", authMiddleware, controller.changeContactData)
+
 // Get requests
 
 router.get("/getContacts", authMiddleware, controller.getContacts);

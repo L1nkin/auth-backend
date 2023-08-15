@@ -295,6 +295,25 @@ class authController {
     }
   }
 
+  async changeContactData(req, res) {
+    try {
+      const { username, firstName, lastName, notice } = req.body
+      let currentUser = await User.findOne({ _id: req.user.id })
+      let contactIndex = currentUser.contacts.findIndex((contact => contact.username === username))
+      if (!contactIndex) {
+        return res.status(400).json({ success: false, message: "Contact undefined" });
+      }
+      currentUser.contacts[contactIndex].firstName = firstName ?? currentUser.contacts[contactIndex].firstName
+      currentUser.contacts[contactIndex].lastName = lastName ?? currentUser.contacts[contactIndex].lastName
+      currentUser.contacts[contactIndex].notice = notice ?? currentUser.contacts[contactIndex].notice
+      currentUser.markModified('contacts')
+      currentUser.save()
+      return res.status(200).json({ success: true, data: { currentUser } });
+    } catch (error) {
+      return res.status(400).json({ success: false, message: error.message });
+    }
+  }
+
   async checkUsers(req, res) {
     try {
       const query = req.query.searchText.toLowerCase();
@@ -317,7 +336,6 @@ class authController {
       }
       currentUser.contacts.map((contact) => {
         if (contact.username === username) {
-          console.log(contact.username)
           contact.isFavorite = !contact.isFavorite;
         }
       });
